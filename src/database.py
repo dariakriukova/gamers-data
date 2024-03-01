@@ -40,7 +40,7 @@ class Region(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     city: Mapped[str]
     state: Mapped[str]
-    users: Mapped[list["User"]] = relationship("User", back_populates="city")
+    users: Mapped[list["User"]] = relationship("User", back_populates="region")
     
 engine = create_engine("sqlite:///wwc_hb.db", echo=True)
 Base.metadata.create_all(engine)
