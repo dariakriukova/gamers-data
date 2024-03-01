@@ -24,7 +24,6 @@ class User(Base):
     gender: Mapped[str]
     dob: Mapped[date] = mapped_column(Date)
     registration_date: Mapped[date] = mapped_column(Date)
-    picture_url: Mapped[str]
     nationality: Mapped[str]
     region_id: Mapped[int] = mapped_column(ForeignKey("region.id"))
     region: Mapped["Region"] = relationship(back_populates="children")

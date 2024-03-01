@@ -1,0 +1,37 @@
+{
+    "gender": "female",
+    "name": {
+        "title": "ms",
+        "first": "amandine",
+        "last": "dupont"
+    },
+    "location": {
+        "street": "1886 avenue goerges clémenceau",
+        "city": "saint-étienne",
+        "state": "haute-marne",
+        "postcode": 50177
+    },
+    "email": "amandine.dupont@example.com",
+    "login": {
+        "username": "blackdog395",
+        "password": "redrum",
+        "salt": "U9LROYgO",
+        "md5": "0839048a03692bab539e9768da8b6294",
+        "sha1": "ee78eb3042f53cfb76457dfed63dfb1b254b6e74",
+        "sha256": "ce44a980252f85d36f2864043c9dea5c680aca8c2b491fa0d68b2eb5cc161c55"
+    },
+    "dob": "1945-12-15 07:32:34",
+    "registered": "2013-11-25 21:01:13",
+    "phone": "01-50-21-29-69",
+    "cell": "06-51-67-95-81",
+    "id": {
+        "name": "INSEE",
+        "value": "2451152147269 96"
+    },
+    "picture": {
+        "large": "https://randomuser.me/api/portraits/women/66.jpg",
+        "medium": "https://randomuser.me/api/portraits/med/women/66.jpg",
+        "thumbnail": "https://randomuser.me/api/portraits/thumb/women/66.jpg"
+    },
+    "nat": "FR"
+}
