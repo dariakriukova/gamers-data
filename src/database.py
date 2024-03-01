@@ -2,7 +2,7 @@
 Database schema for user data loaded from "Wild Wild Chords" and "HarmonicaBots" games.
 """
 
-from sqlalchemy import ForeignKey, Date
+from sqlalchemy import ForeignKey, Date, UniqueConstraint
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
@@ -34,11 +34,13 @@ class User(Base):
 
 
 class Region(Base):
-    __tablename__ = 'region'
+    __tablename__ = 'regions'
+    __table_args__ = (UniqueConstraint("city", "state"),)
     
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(unique=True)
-    users: Mapped[list["User"]] = relationship("User", back_populates="region")
+    city: Mapped[str]
+    state: Mapped[str]
+    users: Mapped[list["User"]] = relationship("User", back_populates="city")
     
 engine = create_engine("sqlite:///wwc_hb.db", echo=True)
 Base.metadata.create_all(engine)
