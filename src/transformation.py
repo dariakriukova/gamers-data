@@ -3,12 +3,8 @@ Data Transformation
 """
 
 from datetime import datetime
-from database import User, Region
 from unidecode import unidecode
 
-
-def transliterate(string):
-    return unidecode(string)
 
 
 def flatten_json_data(data: object):
@@ -27,33 +23,33 @@ def flatten_json_data(data: object):
     }
     return user_data, region_data
 
-
-def normalize_user_data(user_data: object):
-    user_data["first_name"] = (
-        user_data["first_name"].capitalize()
-        if user_data["first_name"] is not None
-        else None
-    )
-    user_data["last_name"] = (
-        user_data["last_name"].capitalize()
-        if user_data["last_name"] is not None
-        else None
-    )
+def normalize_user_data(user_data: dict):
+    keys_to_normalize = ["first_name", "last_name", "gender", "nationality"]
+    
+    for key in keys_to_normalize:
+        if user_data.get(key) is not None:
+            transliterated_text = unidecode(user_data[key])
+            lower_case_text = transliterated_text.lower()
+            cleaned_text = lower_case_text.replace('-', ' ')
+            user_data[key] = cleaned_text
 
     # here an exception may be raised
     user_data["dob"] = datetime.strptime(user_data["dob"], "%Y-%m-%d %H:%M:%S").date()
     user_data["registration_date"] = datetime.strptime(
         user_data["registration_date"], "%Y-%m-%d %H:%M:%S"
     ).date()
-    # etc
     return user_data
 
 
-def normalize_region_data(region_data: object):
-    region_data["city"] = (
-        region_data["city"].capitalize() if region_data["city"] is not None else None
-    )
-    region_data["state"] = (
-        region_data["state"].capitalize() if region_data["state"] is not None else None
-    )
+def normalize_region_data(region_data: dict):
+    keys_to_normalize = ["city", "state"]
+    
+    for key in keys_to_normalize:
+        if region_data.get(key) is not None:
+            transliterated_text = unidecode(region_data[key])
+            lower_case_text = transliterated_text.lower()
+            cleaned_text = lower_case_text.replace('-', ' ')
+            region_data[key] = cleaned_text
+
     return region_data
+
