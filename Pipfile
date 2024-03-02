@@ -9,9 +9,9 @@ colorama = "*"
 pylint = "*"
 pytest = "*"
 black = "*"
-pandas = "*"
 sqlalchemy = "*"
 unidecode = "*"
+pandas = "*"
 
 [dev-packages]
 
