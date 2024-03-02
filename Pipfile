@@ -11,6 +11,7 @@ pytest = "*"
 black = "*"
 pandas = "*"
 sqlalchemy = "*"
+unidecode = "*"
 
 [dev-packages]
 

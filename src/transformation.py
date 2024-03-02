@@ -4,32 +4,56 @@ Data Transformation
 
 from datetime import datetime
 from database import User, Region
+from unidecode import unidecode
 
-def capitalize_first_letter(string):
-    if string:
-        return string.capitalize()
-    return string
 
-def flatten_json_data(data):
-    first_name = data.get("name", {}).get("first", "Unknown")
-    last_name = data.get("name", {}).get("last", "Unknown")
-    
+def transliterate(string):
+    return unidecode(string)
+
+
+def flatten_json_data(data: object):
     user_data = {
-        "first_name": capitalize_first_letter(first_name),
-        "last_name": capitalize_first_letter(last_name),
+        "first_name": data.get("name", {}).get("first"),
+        "last_name": data.get("name", {}).get("last"),
         "email": data["email"],
-        "gender": data.get("gender", "Not specified"),
-        "dob": datetime.strptime(data.get("dob", "1900-01-01 00:00:00"), "%Y-%m-%d %H:%M:%S").date(),
-        "registration_date": datetime.strptime(data.get("registered", "1900-01-01 00:00:00"), "%Y-%m-%d %H:%M:%S").date(),
-        "nationality": data.get("nat", "Unknown"),
+        "gender": data.get("gender"),
+        "dob": data.get("dob"),
+        "registration_date": data.get("registered"),
+        "nationality": data.get("nat"),
     }
     region_data = {
-        "city": capitalize_first_letter(data.get("location", {}).get("city")),
-        "state": capitalize_first_letter(data.get("location", {}).get("state")),
-        }
-    
-    user =  User(**user_data)
-    user.region = Region(**region_data)
-    return user
+        "city": data.get("location", {}).get("city"),
+        "state": data.get("location", {}).get("state"),
+    }
+    return user_data, region_data
 
 
+def normalize_user_data(user_data: object):
+    user_data["first_name"] = (
+        user_data["first_name"].capitalize()
+        if user_data["first_name"] is not None
+        else None
+    )
+    user_data["last_name"] = (
+        user_data["last_name"].capitalize()
+        if user_data["last_name"] is not None
+        else None
+    )
+
+    # here an exception may be raised
+    user_data["dob"] = datetime.strptime(user_data["dob"], "%Y-%m-%d %H:%M:%S").date()
+    user_data["registration_date"] = datetime.strptime(
+        user_data["registration_date"], "%Y-%m-%d %H:%M:%S"
+    ).date()
+    # etc
+    return user_data
+
+
+def normalize_region_data(region_data: object):
+    region_data["city"] = (
+        region_data["city"].capitalize() if region_data["city"] is not None else None
+    )
+    region_data["state"] = (
+        region_data["state"].capitalize() if region_data["state"] is not None else None
+    )
+    return region_data
