@@ -44,6 +44,7 @@ def process(input_file):
             print(rec)
             session.commit()
     
+    
         
     # classify, is it csv or json or raise error
     # if csv, call one parser, if json - another

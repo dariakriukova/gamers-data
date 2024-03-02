@@ -4,5 +4,5 @@
 .eggs/
 *.egg-info/
 **/.DS_Store
-wwc_hb.db
 .venv
+*Db.*
