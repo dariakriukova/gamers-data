@@ -1,4 +1,3 @@
-import pytest
 from sqlalchemy.orm import Session
 from database import Region
 from database import upsert_region

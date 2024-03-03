@@ -3,7 +3,6 @@ from src.transformation import (
     parse_date,
     normalize_string,
     normalize_user_data,
-    normalize_region_data,
 )
 import pytest
 from datetime import date

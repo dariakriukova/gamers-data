@@ -2,7 +2,6 @@
 Read and process given datasources to commit to the new database.
 """
 
-
 from datetime import datetime
 from pathlib import Path
 import pandas as pd
@@ -63,7 +62,7 @@ def process_file(input_file, game_name, engine):
         ):
             region = upsert_region(session, region_data)
             user_data[game_name.lower()] = True
-            user_data['region'] = region
+            user_data["region"] = region
             upsert_user(session, user_data)
             # saving to db in batches to improve performance
             if i % 100 == 0:
@@ -75,8 +74,10 @@ def process_file(input_file, game_name, engine):
 @click.argument("game", type=click.Choice(["WWC", "HB"], case_sensitive=False))
 @click.argument("date", type=click.DateTime(formats=["%Y-%m-%d"]))
 @click.option("--db", "db_name", default=lambda: os.environ.get("DB", "wwc_hb.db"))
-@click.option("--data-dir", "data_dir", default=lambda: os.environ.get("DATA_DIR", "/data"))
-def process(game: str, date: datetime, db_name: str, data_dir:str):
+@click.option(
+    "--data-dir", "data_dir", default=lambda: os.environ.get("DATA_DIR", "/data")
+)
+def process(game: str, date: datetime, db_name: str, data_dir: str):
     engine = get_engine(f"{data_dir}/{db_name}")
     print()
 
