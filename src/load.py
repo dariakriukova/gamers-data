@@ -1,7 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 import pandas as pd
-from database import setup_db, upsert_region, upsert_user
+from database import get_engine, upsert_region, upsert_user
 from transformation import flatten_json_data, normalize_user_data, normalize_region_data
 from sqlalchemy.orm import Session
 import click
@@ -41,7 +41,7 @@ def read_csv_lines(file):
     return users_data
 
 
-def process_file(input_file, engine):
+def process_file(input_file, game_name, engine):
     ext = input_file.name.split(".")[-1]
     if ext == "json":
         users_data, regions_data = read_json_lines(input_file)
@@ -57,7 +57,9 @@ def process_file(input_file, engine):
             zip(users_data, regions_data), start=1
         ):
             region = upsert_region(session, region_data)
-            upsert_user(session, user_data, region)
+            user_data[game_name.lower()] = True
+            user_data['region'] = region
+            upsert_user(session, user_data)
             # saving to db in batches to improve performance
             if i % 100 == 0:
                 session.commit()
@@ -67,17 +69,17 @@ def process_file(input_file, engine):
 @click.command()
 @click.argument("game", type=click.Choice(["WWC", "HB"], case_sensitive=False))
 @click.argument("date", type=click.DateTime(formats=["%Y-%m-%d"]))
-@click.option("--db", "db_name", default=lambda: os.environ.get("DB", "wwc_hb.db"))
+@click.option("--db", "db_name", default=lambda: os.environ.get("DB", "data/wwc_hb.db"))
 def process(game: str, date: datetime, db_name: str):
-    engine = setup_db(db_name)
+    engine = get_engine(db_name)
     print()
 
-    parent_dir = Path(f'./data/{game.lower()}/{date.strftime("%Y/%m/%d")}/')
+    parent_dir = Path(f'/data/{game.lower()}/{date.strftime("%Y/%m/%d")}/')
     if not parent_dir.exists():
-        raise RuntimeError("bla bla")
+        raise RuntimeError(f"directory {parent_dir} does not exist")
 
     for file in parent_dir.glob("*.*"):
-        process_file(file, engine)
+        process_file(file, game, engine)
 
 
 if __name__ == "__main__":

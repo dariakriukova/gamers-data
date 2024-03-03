@@ -35,6 +35,8 @@ class User(Base):
     nationality: Mapped[str] = mapped_column(nullable=True)
     region_id: Mapped[int] = mapped_column(ForeignKey("regions.id"))
     region: Mapped["Region"] = relationship("Region", back_populates="users")
+    wwc: Mapped[bool] = mapped_column(default=False)
+    hb: Mapped[bool] = mapped_column(default=False)
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, email={self.email!r})"
@@ -63,15 +65,14 @@ def upsert_region(session, region_data):
     return region
 
 
-def upsert_user(session, user_data, region):
+def upsert_user(session, user_data):
     try:
         user = session.query(User).filter_by(email=user_data["email"]).first()
         if user:
             for key, value in user_data.items():
                 setattr(user, key, value)
-            user.region = region
         else:
-            user = User(**user_data, region=region)
+            user = User(**user_data)
             session.add(user)
         session.flush()
     except SQLAlchemyError as e:
@@ -79,7 +80,7 @@ def upsert_user(session, user_data, region):
         logging.error(f"SQLAlchemyError occurred: {e}")
 
 
-def setup_db(db_name):
+def get_engine(db_name):
     engine = create_engine(f"sqlite:///{db_name}")
 
     if not os.path.exists(db_name):
