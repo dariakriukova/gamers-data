@@ -23,6 +23,10 @@ To run the data pipeline application using Docker, follow these steps:
     - For "Wild Wild Chords":
 
         ```bash
+        docker run -v ./data:/data data_loader wwc 2021-04-28
+        ```
+        and
+        ```bash
         docker run -v ./data:/data data_loader wwc 2021-04-29
         ```
 
