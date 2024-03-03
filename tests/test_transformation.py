@@ -2,6 +2,8 @@ from src.transformation import (
     flatten_json_data,
     parse_date,
     normalize_string,
+    normalize_user_data,
+    normalize_region_data,
 )
 import pytest
 from datetime import date
@@ -121,3 +123,54 @@ class TestNormilizeDate:
     )
     def test_normalize_date(self, input, expected):
         assert parse_date(input) == expected
+
+
+class TestNormalizeUserData:
+    @pytest.mark.parametrize(
+        "input_data,expected_data",
+        [
+            (
+                {
+                    "first_name": "John$$$",
+                    "last_name": "Doe ",
+                    "email": "johndoe@example.com",
+                    "gender": "male",
+                    "dob": "01/01/1990",
+                    "registration_date": "01/01/2010",
+                    "nationality": "US",
+                },
+                {
+                    "first_name": "john",
+                    "last_name": "doe",
+                    "email": "johndoe@example.com",
+                    "gender": "male",
+                    "dob": date(1990, 1, 1),
+                    "registration_date": date(2010, 1, 1),
+                    "nationality": "us",
+                },
+            ),
+            (
+                {
+                    "first_name": None,
+                    "last_name": "Doe",
+                    "email": "johndoe@example.com",
+                    "gender": "male",
+                    "dob": None,
+                    "registration_date": "2010-01-01 23:13:11",
+                    "nationality": None,
+                },
+                {
+                    "first_name": None,
+                    "last_name": "doe",
+                    "email": "johndoe@example.com",
+                    "gender": "male",
+                    "dob": None,
+                    "registration_date": date(2010, 1, 1),
+                    "nationality": None,
+                },
+            ),
+        ],
+    )
+    def test_return_normalized_data(self, input_data, expected_data):
+        returned_data = normalize_user_data(input_data)
+        assert returned_data == expected_data

@@ -1,6 +1,6 @@
 from database import Base
 from sqlalchemy.orm import Session
-from src.database import setup_db
+from src.database import get_engine
 import pytest
 import os
    
@@ -18,7 +18,7 @@ def engine():
         os.remove(TEST_DB_NAME)
     except FileNotFoundError:
         ...
-    engine = setup_db(TEST_DB_NAME)
+    engine = get_engine(TEST_DB_NAME)
     return engine
 
 
