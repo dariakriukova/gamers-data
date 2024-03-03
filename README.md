@@ -53,8 +53,14 @@ For developers working directly in the development environment, follow these ste
     ```bash
     pipenv install -d
     ```
+3. **Activate the new environment**
+    This step activates the virtual environment that Pipenv has created, which contains all the dependencies required for the project.
 
-3. **Run the Script**
+    ```bash
+    pipenv shell
+    ```
+
+4. **Run the Script**
 
     Finally, run the data loading script for a specific game and date. For example, to load data for "HarmonicaBots" from April 28, 2021, use the following command:
 
@@ -63,3 +69,12 @@ For developers working directly in the development environment, follow these ste
     ```
 
 Replace `hb 2021-04-28` with `wwc 2021-04-29` to load data for "Wild Wild Chords" from April 29, 2021, or adjust the parameters as needed to process different data.
+
+
+## Running tests
+    
+    Provided the pipenv virtual environment is activated, run
+
+    ```bash
+    pytest
+    ```
