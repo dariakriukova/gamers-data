@@ -3,9 +3,11 @@ Data Transformation
 """
 
 from datetime import datetime
+import logging
 import re
 from unidecode import unidecode
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 def flatten_json_data(data: dict):
@@ -24,7 +26,6 @@ def flatten_json_data(data: dict):
     }
     return user_data, region_data
 
-
 def normalize_string(raw_data):
     if isinstance(raw_data, str):
         transliterated_text = unidecode(raw_data)
@@ -35,29 +36,27 @@ def normalize_string(raw_data):
     else:
         return raw_data
 
-def normalize_date(raw_data):
+def parse_date(raw_data):
     if raw_data is None:
         return None
     
     patterns = ["%Y-%m-%d %H:%M:%S", "%m/%d/%Y"]
-    for pat in patterns:
+    for pattern in patterns:
         try:
-            return datetime.strptime(raw_data, pat).date()
+            return datetime.strptime(raw_data, pattern).date()
         except ValueError:
             ...
     return None
-    
 
 def normalize_user_data(user_data: dict):
     keys_to_normalize = ["first_name", "last_name", "gender", "nationality"]
     for key in keys_to_normalize:
         user_data[key] = normalize_string(user_data.get(key))
 
-    # here an exception may be raised
-    user_data["dob"] = normalize_date(user_data.get("dob"))
-    user_data["registration_date"] = normalize_date(user_data.get("registration_date"))
+    
+    user_data["dob"] = parse_date(user_data.get("dob"))
+    user_data["registration_date"] = parse_date(user_data.get("registration_date"))
     return user_data
-
 
 def normalize_region_data(region_data: dict):
     keys_to_normalize = ["city", "state"]
@@ -65,4 +64,3 @@ def normalize_region_data(region_data: dict):
         region_data[key] = normalize_string(region_data[key])
 
     return region_data
-

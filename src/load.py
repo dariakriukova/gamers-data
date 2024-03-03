@@ -8,6 +8,7 @@ import click
 import json
 import os
 import itertools
+import logging
 
 
 def read_json_lines(file):
@@ -15,12 +16,15 @@ def read_json_lines(file):
     regions_data = []
     with file.open() as f:
         for line in f:
-            json_data = json.loads(line)
-            user_data, region_data = flatten_json_data(json_data)
-            user_data = normalize_user_data(user_data)
-            region_data = normalize_region_data(region_data)
-            users_data.append(user_data)
-            regions_data.append(region_data)
+            try:
+                json_data = json.loads(line)
+                user_data, region_data = flatten_json_data(json_data)
+                user_data = normalize_user_data(user_data)
+                region_data = normalize_region_data(region_data)
+                users_data.append(user_data)
+                regions_data.append(region_data)
+            except Exception as e:
+                logging.warning(e)
 
     return users_data, regions_data
 
@@ -45,7 +49,7 @@ def process_file(input_file, engine):
         users_data = read_csv_lines(input_file)
         regions_data = itertools.cycle([{"city": None, "state": None}])
     else:
-        print(f"Skipping file {input_file}")
+        logging.warning(f"Skipping file {input_file}")
 
     with Session(engine) as session:
         for i, (user_data, region_data) in enumerate(
@@ -65,7 +69,6 @@ def process_file(input_file, engine):
 def process(game: str, date: datetime, db_name: str):
     engine = setup_db(db_name)
 
-    # look for file
     parent_dir = Path(f'./data/{game.lower()}/{date.strftime("%Y/%m/%d")}/')
     if not parent_dir.exists():
         raise RuntimeError("bla bla")

@@ -4,12 +4,18 @@ Database schema for user data loaded from "Wild Wild Chords" and "HarmonicaBots"
 
 from sqlalchemy import ForeignKey, Date, UniqueConstraint
 from sqlalchemy import create_engine
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, OperationalError
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 from datetime import date
+import logging
+import os
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 class Base(DeclarativeBase):
@@ -52,7 +58,7 @@ def upsert_region(session, region_data):
         try:
             session.flush()
         except SQLAlchemyError as e:
-            print(f"SQLAlchemyError {e}")
+            logging.error(f"SQLAlchemyError occurred: {e}")
             session.rollback()
     return region
 
@@ -70,13 +76,20 @@ def upsert_user(session, user_data, region):
         session.flush()
     except SQLAlchemyError as e:
         session.rollback()
-        print(f"SQLAlchemyError occurred: {e}")
+        logging.error(f"SQLAlchemyError occurred: {e}")
 
 
 def setup_db(db_name):
-    engine = create_engine(f"sqlite:///{db_name}", echo=True)
-    
-    # check if db already exists
-    # if not - create all
-    Base.metadata.create_all(engine)
+    db_path = f"{db_name}"
+    engine = create_engine(f"sqlite:///{db_path}")
+
+    if not os.path.exists(db_path):
+        try:
+            Base.metadata.create_all(engine)
+            logging.info(f"Database and tables created: {db_name}")
+        except OperationalError as e:
+            logging.error(f"An error occurred during table creation: {e}")
+    else:
+        logging.info(f"Database already exists, connecting to: {db_name}")
+
     return engine

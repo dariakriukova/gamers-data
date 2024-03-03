@@ -1,7 +1,10 @@
-from src.transformation import flatten_json_data
+from src.transformation import (
+    flatten_json_data,
+    parse_date,
+    normalize_string,
+)
 import pytest
-
-from transformation import normalize_string
+from datetime import date
 
 
 class TestFlattenJsonData:
@@ -78,22 +81,43 @@ class TestFlattenJsonData:
 
 
 class TestNormalizeString:
-    @pytest.mark.parametrize("input,expected", [
-        ("Hello WORLD$!", "hello world"),
-        ("1234", ""),
-        ("John_Doe-2024!", "john doe"),
-        ("Äëïó üñîçødé", "aeio unicode"),
-        ("  multiple   spaces   ", "multiple spaces"),
-        ("special#$%^&*()chars", "special chars"),
-    ])
+    @pytest.mark.parametrize(
+        "input,expected",
+        [
+            ("Hello WORLD$!", "hello world"),
+            ("1234", ""),
+            ("John_Doe-2024!", "john doe"),
+            ("Äëïó üñîçødé", "aeio unicode"),
+            ("  multiple   spaces   ", "multiple spaces"),
+            ("special#$%^&*()chars", "special chars"),
+        ],
+    )
     def test_normalize_string_normalizes(self, input, expected):
         assert normalize_string(input) == expected
-        
-    @pytest.mark.parametrize("input,expected", [
-        (None, None),
-        (1234, 1234),
-    ])
+
+    @pytest.mark.parametrize(
+        "input,expected",
+        [
+            (None, None),
+            (1234, 1234),
+        ],
+    )
     def test_normalize_string_ignores_non_strings(self, input, expected):
         assert normalize_string(input) == expected
-        
-    
+
+
+class TestNormilizeDate:
+    @pytest.mark.parametrize(
+        "input,expected",
+        [
+            ("2023-01-01 00:00:00", date(2023, 1, 1)),
+            ("12/31/2023", date(2023, 12, 31)),
+            ("01/01/2023", date(2023, 1, 1)),
+            ("", None),
+            (None, None),
+            ("invalid-date", None),
+            ("29/02/2024", None),
+        ],
+    )
+    def test_normalize_date(self, input, expected):
+        assert parse_date(input) == expected
