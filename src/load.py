@@ -1,3 +1,8 @@
+"""
+Read and process given datasources to commit to the new database.
+"""
+
+
 from datetime import datetime
 from pathlib import Path
 import pandas as pd
@@ -69,12 +74,13 @@ def process_file(input_file, game_name, engine):
 @click.command()
 @click.argument("game", type=click.Choice(["WWC", "HB"], case_sensitive=False))
 @click.argument("date", type=click.DateTime(formats=["%Y-%m-%d"]))
-@click.option("--db", "db_name", default=lambda: os.environ.get("DB", "data/wwc_hb.db"))
-def process(game: str, date: datetime, db_name: str):
-    engine = get_engine(db_name)
+@click.option("--db", "db_name", default=lambda: os.environ.get("DB", "wwc_hb.db"))
+@click.option("--data-dir", "data_dir", default=lambda: os.environ.get("DATA_DIR", "/data"))
+def process(game: str, date: datetime, db_name: str, data_dir:str):
+    engine = get_engine(f"{data_dir}/{db_name}")
     print()
 
-    parent_dir = Path(f'/data/{game.lower()}/{date.strftime("%Y/%m/%d")}/')
+    parent_dir = Path(f'{data_dir}/{game.lower()}/{date.strftime("%Y/%m/%d")}/')
     if not parent_dir.exists():
         raise RuntimeError(f"directory {parent_dir} does not exist")
 

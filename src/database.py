@@ -13,10 +13,6 @@ from datetime import date
 import logging
 import os
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-
 
 class Base(DeclarativeBase):
     pass
@@ -28,6 +24,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     first_name: Mapped[str] = mapped_column(nullable=True)
     last_name: Mapped[str] = mapped_column(nullable=True)
+    # email is always unique and required when registering
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     gender: Mapped[str] = mapped_column(nullable=True)
     dob: Mapped[date] = mapped_column(Date, nullable=True)
@@ -38,12 +35,14 @@ class User(Base):
     wwc: Mapped[bool] = mapped_column(default=False)
     hb: Mapped[bool] = mapped_column(default=False)
 
+    # user's id and email to string for debugging
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, email={self.email!r})"
 
 
 class Region(Base):
     __tablename__ = "regions"
+    # city may not be unique, but suponsingly city+state pair is
     __table_args__ = (UniqueConstraint("city", "state"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
