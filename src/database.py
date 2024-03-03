@@ -44,10 +44,6 @@ class Region(Base):
     users: Mapped[list["User"]] = relationship("User", back_populates="region")
 
 
-engine = create_engine("sqlite:///wwc_hb.db", echo=True)
-Base.metadata.create_all(engine)
-
-
 def upsert_region(session, region_data):
     region = session.query(Region).filter_by(**region_data).first()
     if not region:
@@ -75,3 +71,12 @@ def upsert_user(session, user_data, region):
     except SQLAlchemyError as e:
         session.rollback()
         print(f"SQLAlchemyError occurred: {e}")
+
+
+def setup_db(db_name):
+    engine = create_engine(f"sqlite:///{db_name}", echo=True)
+    
+    # check if db already exists
+    # if not - create all
+    Base.metadata.create_all(engine)
+    return engine
