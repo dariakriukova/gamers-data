@@ -1,5 +1,5 @@
 from pathlib import Path
-from src.database import setup_db, User
+from src.database import User
 from src.load import read_json_lines, read_csv_lines
 import pytest
 from sqlalchemy.orm import Session
@@ -42,9 +42,8 @@ class TestReadCsvLines:
         assert len(users_data) == 10
         
 
-
 class TestLoad:
-
+    # TODO
     def test_it_works(self, engine):
         with Session(engine) as session:
             assert session.query(User).count() == 0

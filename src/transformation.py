@@ -49,6 +49,7 @@ def parse_date(raw_data):
     return None
 
 def normalize_user_data(user_data: dict):
+    user_data = user_data.copy() # make function pure
     keys_to_normalize = ["first_name", "last_name", "gender", "nationality"]
     for key in keys_to_normalize:
         user_data[key] = normalize_string(user_data.get(key))

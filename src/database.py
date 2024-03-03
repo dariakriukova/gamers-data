@@ -26,11 +26,11 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    first_name: Mapped[str]
-    last_name: Mapped[str]
+    first_name: Mapped[str] = mapped_column(nullable=True)
+    last_name: Mapped[str] = mapped_column(nullable=True)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
-    gender: Mapped[str]
-    dob: Mapped[date] = mapped_column(Date)
+    gender: Mapped[str] = mapped_column(nullable=True)
+    dob: Mapped[date] = mapped_column(Date, nullable=True)
     registration_date: Mapped[date] = mapped_column(Date, nullable=True)
     nationality: Mapped[str] = mapped_column(nullable=True)
     region_id: Mapped[int] = mapped_column(ForeignKey("regions.id"))
@@ -80,13 +80,12 @@ def upsert_user(session, user_data, region):
 
 
 def setup_db(db_name):
-    db_path = f"{db_name}"
-    engine = create_engine(f"sqlite:///{db_path}")
+    engine = create_engine(f"sqlite:///{db_name}")
 
-    if not os.path.exists(db_path):
+    if not os.path.exists(db_name):
         try:
             Base.metadata.create_all(engine)
-            logging.info(f"Database and tables created: {db_name}")
+            logging.info(f"Database and tables are created: {db_name}")
         except OperationalError as e:
             logging.error(f"An error occurred during table creation: {e}")
     else:

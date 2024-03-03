@@ -47,6 +47,7 @@ def process_file(input_file, engine):
         users_data, regions_data = read_json_lines(input_file)
     elif ext == "csv":
         users_data = read_csv_lines(input_file)
+        # making infinite list of empty locations to couple with users
         regions_data = itertools.cycle([{"city": None, "state": None}])
     else:
         logging.warning(f"Skipping file {input_file}")
@@ -57,6 +58,7 @@ def process_file(input_file, engine):
         ):
             region = upsert_region(session, region_data)
             upsert_user(session, user_data, region)
+            # saving to db in batches to improve performance
             if i % 100 == 0:
                 session.commit()
         session.commit()
@@ -68,6 +70,7 @@ def process_file(input_file, engine):
 @click.option("--db", "db_name", default=lambda: os.environ.get("DB", "wwc_hb.db"))
 def process(game: str, date: datetime, db_name: str):
     engine = setup_db(db_name)
+    print()
 
     parent_dir = Path(f'./data/{game.lower()}/{date.strftime("%Y/%m/%d")}/')
     if not parent_dir.exists():
