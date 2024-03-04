@@ -1,5 +1,3 @@
-# Answers
-
 # Gender ratio in each game
 
 ## Short Answer
