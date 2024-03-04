@@ -109,8 +109,6 @@ ON
     AND oldest.rank_oldest = 1;
 ```
 
-1. 
-
 # How to make the data pipeline faster, more scalable and more reliable?
 
 ## Optimize Database Design
