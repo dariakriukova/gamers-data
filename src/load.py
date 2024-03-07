@@ -57,8 +57,11 @@ def process_file(input_file, game_name, engine):
         logging.warning(f"Skipping file {input_file}")
 
     with Session(engine) as session:
+        # automatic counter for batch processing
         for i, (user_data, region_data) in enumerate(
-            zip(users_data, regions_data), start=1
+            # iterates over both lists
+            zip(users_data, regions_data),
+            start=1,
         ):
             region = upsert_region(session, region_data)
             user_data[game_name.lower()] = True
@@ -90,5 +93,4 @@ def process(game: str, date: datetime, db_name: str, data_dir: str):
 
 
 if __name__ == "__main__":
-
     process()

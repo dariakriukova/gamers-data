@@ -7,6 +7,10 @@ import os
 TEST_DB_NAME = "test.db"
 
 
+# this fixture is automatically used by all tests in the
+# session without needing to be explicitly passed as a
+# parameter to them. fixture is set up once at the start of
+# the test session and is torn down at the end
 @pytest.fixture(autouse=True, scope="session")
 def set_env():
     os.environ["DB"] = TEST_DB_NAME

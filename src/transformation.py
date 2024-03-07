@@ -14,6 +14,8 @@ logging.basicConfig(
 
 def flatten_json_data(data: dict):
     user_data = {
+        # .get() is used to avoid KeyError if any of these keys
+        # do not exist in the input data
         "first_name": data.get("name", {}).get("first"),
         "last_name": data.get("name", {}).get("last"),
         "email": data["email"],
@@ -34,7 +36,9 @@ def normalize_string(raw_data):
         transliterated_text = unidecode(raw_data)
         lower_case_text = transliterated_text.lower()
         cleaned_text = re.sub(r"[^a-z]", " ", lower_case_text)
+        # to ensure the output does not contain extra spaces between words
         cleaned_text = re.sub(r"\s+", " ", cleaned_text)
+        # removes any leading or trailing spaces from the cleaned text
         return cleaned_text.strip()
     else:
         return raw_data
@@ -44,9 +48,10 @@ def parse_date(raw_data):
     if raw_data is None:
         return None
 
-    patterns = ["%Y-%m-%d %H:%M:%S", "%m/%d/%Y"]
+    patterns = "%Y-%m-%d %H:%M:%S", "%m/%d/%Y"
     for pattern in patterns:
         try:
+            # create a datetime from string
             return datetime.strptime(raw_data, pattern).date()
         except ValueError:
             ...
@@ -57,7 +62,9 @@ def normalize_user_data(user_data: dict):
     user_data = user_data.copy()  # make function pure
     keys_to_normalize = ["first_name", "last_name", "gender", "nationality"]
     for key in keys_to_normalize:
-        user_data[key] = normalize_string(user_data.get(key))
+        user_data[key] = normalize_string(
+            user_data.get(key)
+        )  # .get to prevent keyerror
 
     user_data["dob"] = parse_date(user_data.get("dob"))
     user_data["registration_date"] = parse_date(user_data.get("registration_date"))

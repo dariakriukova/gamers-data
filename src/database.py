@@ -14,6 +14,7 @@ import logging
 import os
 
 
+# A base class for all model classes that represent database tables
 class Base(DeclarativeBase):
     pass
 
@@ -51,6 +52,7 @@ class Region(Base):
     users: Mapped[list["User"]] = relationship("User", back_populates="region")
 
 
+# update an existing region or insert new
 def upsert_region(session, region_data):
     region = session.query(Region).filter_by(**region_data).first()
     if not region:
@@ -66,9 +68,11 @@ def upsert_region(session, region_data):
 
 def upsert_user(session, user_data):
     try:
+        # the first matching record is sufficient to determine existence
         user = session.query(User).filter_by(email=user_data["email"]).first()
         if user:
             for key, value in user_data.items():
+                # updating the user's attributes dynamically based on user_data
                 setattr(user, key, value)
         else:
             user = User(**user_data)
